@@ -30,13 +30,13 @@ bsp_init(void) {
     */
 
     /* Enable LED on GPIOB pin 2 */
-    LL_APB2_GRP1_EnableClock(LL_AHB1_GRP1_PERIPH_GPIOC);
+    LL_AHB1_GRP1_EnableClock(LL_AHB1_GRP1_PERIPH_GPIOC);
     LL_GPIO_SetPinMode(GPIOC, LL_GPIO_PIN_13, LL_GPIO_MODE_OUTPUT);
 
     /* Enable CE and CSN for NRF24L01*/
-    LL_APB2_GRP1_EnableClock(LL_AHB1_GRP1_PERIPH_GPIOC);
-    LL_GPIO_SetPinMode(GPIOC, LL_GPIO_PIN_13, LL_GPIO_MODE_OUTPUT);
-    LL_GPIO_SetPinMode(GPIOC, LL_GPIO_PIN_14, LL_GPIO_MODE_OUTPUT);
+    //LL_APB2_GRP1_EnableClock(LL_AHB1_GRP1_PERIPH_GPIOC);
+    //LL_GPIO_SetPinMode(GPIOC, LL_GPIO_PIN_13, LL_GPIO_MODE_OUTPUT);
+    //LL_GPIO_SetPinMode(GPIOC, LL_GPIO_PIN_14, LL_GPIO_MODE_OUTPUT);
 
     /* Enable CE for W25Q and set it to high lvl */
     LL_APB2_GRP1_EnableClock(LL_AHB1_GRP1_PERIPH_GPIOA);
