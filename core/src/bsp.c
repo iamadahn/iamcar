@@ -7,7 +7,7 @@
 void
 bsp_init(void) {
 
-    /* Configure RCC to use HSE and get 72 MHz */
+    /* Configure RCC to use HSE and get 96 MHz */
     rcc_config();
 
     /* Configure NVIC for FreeRTOS to work correctly */
