@@ -26,16 +26,6 @@ kernel_start(void) {
     vTaskStartScheduler();
 }
 
-void
-led_controller_task(void* pv_argument) {
-    led_controller_handler();
-}
-
-void
-rc_controller_task(void* pv_argument) {
-    rc_controller_task_handler();
-}
-
 #if ( configCHECK_FOR_STACK_OVERFLOW > 0 )
 
     void vApplicationStackOverflowHook( TaskHandle_t xTask,

@@ -3,7 +3,7 @@
 #include "rtos.h"
 
 void
-rc_controller_task_handler(void) {
+rc_controller_task(void* argument) {
     nrf24_t nrf24 = {
         .spi = SPI1,
         .ce_port = GPIOC,
