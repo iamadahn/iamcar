@@ -11,7 +11,7 @@ rcc_config(void) {
     LL_FLASH_SetLatency(LL_FLASH_LATENCY_3);
 
     /* Veryfing that flash memory latency was set correctly */
-    if (LL_FLASH_GetLatency() != LL_FLASH_LATENCY_2) {
+    if (LL_FLASH_GetLatency() != LL_FLASH_LATENCY_3) {
         error_handler();
     }
 
@@ -23,8 +23,11 @@ rcc_config(void) {
         ;
     }
 
-    /* HSE value is 8 MHz, so we set PPLMul to 9 in order to get 72 MHz on PLLCLK and SYSCLK*/
-    LL_RCC_PLL_ConfigDomain_SYS(LL_RCC_PLLSOURCE_HSE, LL_RCC_PLLM_DIV_12, 96, LL_RCC_PLLP_DIV_2);
+    /* HSE value is 25 MHz, so we set PPLMul to 25 in order to get 96 MHz on PLLCLK and SYSCLK*/
+    LL_RCC_PLL_ConfigDomain_SYS(LL_RCC_PLLSOURCE_HSE, LL_RCC_PLLM_DIV_25, 192, LL_RCC_PLLP_DIV_2);
+
+    /* Configure PLLQ to get 48 MHz on USB*/
+    LL_RCC_PLL_ConfigDomain_48M(LL_RCC_PLLSOURCE_HSE, LL_RCC_PLLM_DIV_25, 192, LL_RCC_PLLQ_DIV_4);
 
     /* Enabling PLLCLK on System Clock Mux */
     LL_RCC_PLL_Enable();
@@ -34,13 +37,13 @@ rcc_config(void) {
         ;
     }
 
-    /* Setting AHB Prescaler to /1 to get 72 MHz after SYSCLK */
+    /* Setting AHB Prescaler to /1 to get 96 MHz after SYSCLK */
     LL_RCC_SetAHBPrescaler(LL_RCC_SYSCLK_DIV_1);
 
-    /* Setting APB1 Prescaler to /2 (36 MHz max) */
+    /* Setting APB1 Prescaler to /2 (48 MHz / 50 MHz max) */
     LL_RCC_SetAPB1Prescaler(LL_RCC_APB1_DIV_2);
 
-    /* Setting APB2 Prescaler to /1 (72 MHz max) */
+    /* Setting APB2 Prescaler to /1 (96 MHz / 100 MHz max) */
     LL_RCC_SetAPB2Prescaler(LL_RCC_APB2_DIV_1);
 
     /* Setting SYSCLK source to PLLCLK*/
@@ -52,11 +55,11 @@ rcc_config(void) {
     }
 
     /* Setting time base source to SysTick */
-    LL_Init1msTick(100000000);
+    LL_Init1msTick(96000000);
 
     /* Configure SysTick clock source */
     LL_SYSTICK_SetClkSource(LL_SYSTICK_CLKSOURCE_HCLK);
 
-    /* Setting system core clock to 72 MHz */
-    LL_SetSystemCoreClock(100000000);
+    /* Setting system core clock to 96 MHz */
+    LL_SetSystemCoreClock(96000000);
 }
