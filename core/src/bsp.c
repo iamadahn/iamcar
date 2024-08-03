@@ -11,8 +11,8 @@ bsp_init(void) {
     rcc_config();
 
     /* Configure NVIC for FreeRTOS to work correctly */
-	NVIC_SetPriorityGrouping(3U);
-	NVIC_SetPriority(SysTick_IRQn, NVIC_EncodePriority(NVIC_GetPriorityGrouping(), 15, 0));
+    NVIC_SetPriorityGrouping(3U);
+    NVIC_SetPriority(SysTick_IRQn, NVIC_EncodePriority(NVIC_GetPriorityGrouping(), 15, 0));
 
     /* Create SPI struct and configure chosen SPI */
     /*
