@@ -93,11 +93,13 @@ target_link_libraries(${PROJECT_NAME}.elf
 add_subdirectory(${CMAKE_SOURCE_DIR}/modules/led_controller)
 add_subdirectory(${CMAKE_SOURCE_DIR}/modules/rc_controller)
 add_subdirectory(${CMAKE_SOURCE_DIR}/modules/usbd_controller)
+add_subdirectory(${CMAKE_SOURCE_DIR}/modules/motor_controller)
 
 target_link_libraries(${PROJECT_NAME}.elf
     led_controller_module
     rc_controller_module
     usbd_controller_module
+    motor_controller_module
 )
 
 add_library(freertos_config INTERFACE)
