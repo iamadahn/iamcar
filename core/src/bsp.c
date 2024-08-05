@@ -3,6 +3,8 @@
 #include "stm32f4xx_ll_bus.h"
 #include "stm32f4xx_ll_gpio.h"
 #include "stm32f4xx_ll_utils.h"
+#include "stm32f4xx_ll_tim.h"
+#include <tim.h>
 
 void
 bsp_init(void) {
@@ -13,6 +15,17 @@ bsp_init(void) {
     /* Configure NVIC for FreeRTOS to work correctly */
     NVIC_SetPriorityGrouping(3U);
     NVIC_SetPriority(SysTick_IRQn, NVIC_EncodePriority(NVIC_GetPriorityGrouping(), 15, 0));
+
+    tim_pwm_t tim2_pwm = {
+        .base = TIM2,
+        .port = GPIOA,
+        .pins = LL_GPIO_PIN_1 | LL_GPIO_PIN_2,
+        .channels = LL_TIM_CHANNEL_CH2 | LL_TIM_CHANNEL_CH3,
+        .alt_func = LL_GPIO_AF_1,
+        .psc = 1,
+        .arr = 1,
+    };
+    tim_pwm_init(&tim2_pwm);
 
     /* Create SPI struct and configure chosen SPI */
     /*
