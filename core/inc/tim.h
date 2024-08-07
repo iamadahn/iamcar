@@ -6,10 +6,7 @@
 
 typedef struct {
   TIM_TypeDef* base;
-  GPIO_TypeDef* port;
-  uint32_t pins;
   uint32_t channels;
-  uint32_t alt_func;
   uint32_t psc;
   uint32_t arr;
 } tim_pwm_t;

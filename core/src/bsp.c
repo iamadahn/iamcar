@@ -16,14 +16,23 @@ bsp_init(void) {
     NVIC_SetPriorityGrouping(3U);
     NVIC_SetPriority(SysTick_IRQn, NVIC_EncodePriority(NVIC_GetPriorityGrouping(), 15, 0));
 
+    /* TIM2 pins initalisation */
+    LL_AHB1_GRP1_EnableClock(LL_AHB1_GRP1_PERIPH_GPIOA);
+    
+    LL_GPIO_InitTypeDef tim2_pins = {
+        .Pin = LL_GPIO_PIN_1 | LL_GPIO_PIN_2,
+        .Mode = LL_GPIO_MODE_ALTERNATE,
+        .Speed = LL_GPIO_SPEED_FREQ_VERY_HIGH,
+        .Pull = LL_GPIO_PULL_DOWN,
+        .Alternate = LL_GPIO_AF_1,
+    };
+    LL_GPIO_Init(GPIOA, &tim2_pins);
+
     tim_pwm_t tim2_pwm = {
         .base = TIM2,
-        .port = GPIOA,
-        .pins = LL_GPIO_PIN_1 | LL_GPIO_PIN_2,
         .channels = LL_TIM_CHANNEL_CH2 | LL_TIM_CHANNEL_CH3,
-        .alt_func = LL_GPIO_AF_1,
-        .psc = 1,
-        .arr = 1,
+        .psc = 959, // 96000000 Hz / (959 + 1) = 100000 Hz
+        .arr = 99,
     };
     tim_pwm_init(&tim2_pwm);
 
