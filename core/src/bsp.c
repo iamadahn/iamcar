@@ -4,7 +4,8 @@
 #include "stm32f4xx_ll_gpio.h"
 #include "stm32f4xx_ll_utils.h"
 #include "stm32f4xx_ll_tim.h"
-#include <tim.h>
+#include "tim.h"
+#include "spi.h"
 
 void
 bsp_init(void) {
@@ -36,29 +37,38 @@ bsp_init(void) {
     };
     tim_pwm_init(&tim2_pwm);
 
+    /* SPI1 pins initialisation */
+    LL_APB2_GRP1_EnableClock(LL_AHB1_GRP1_PERIPH_GPIOA);
+
+    LL_GPIO_InitTypeDef spi1_pins = {
+        .Pin = LL_GPIO_PIN_5 | LL_GPIO_PIN_7,
+        .Mode = LL_GPIO_MODE_ALTERNATE,
+        .Speed = LL_GPIO_SPEED_FREQ_VERY_HIGH,
+        .OutputType = LL_GPIO_OUTPUT_PUSHPULL,
+        .Alternate = LL_GPIO_AF_5,
+    };
+    LL_GPIO_Init(GPIOA, &spi1_pins);
+
+    spi1_pins.Pin = LL_GPIO_PIN_6;
+    spi1_pins.Mode = LL_GPIO_MODE_INPUT;
+    LL_GPIO_Init(GPIOA, &spi1_pins);
+
     /* Create SPI struct and configure chosen SPI */
-    /*
     spi_t spi1 = {
         .spi_base = SPI1,
-        .sck_port = GPIOA,
-        .sck_pin = LL_GPIO_PIN_5,
-        .mosi_port = GPIOA,
-        .mosi_pin = LL_GPIO_PIN_7,
-        .miso_port = GPIOA,
-        .miso_pin = LL_GPIO_PIN_6,
         .spi_irq = SPI1_IRQn,
     };
     spi_config(&spi1);
-    */
+    
 
     /* Enable LED on GPIOB pin 2 */
     LL_AHB1_GRP1_EnableClock(LL_AHB1_GRP1_PERIPH_GPIOC);
     LL_GPIO_SetPinMode(GPIOC, LL_GPIO_PIN_13, LL_GPIO_MODE_OUTPUT);
 
     /* Enable CE and CSN for NRF24L01*/
-    //LL_APB2_GRP1_EnableClock(LL_AHB1_GRP1_PERIPH_GPIOC);
-    //LL_GPIO_SetPinMode(GPIOC, LL_GPIO_PIN_13, LL_GPIO_MODE_OUTPUT);
-    //LL_GPIO_SetPinMode(GPIOC, LL_GPIO_PIN_14, LL_GPIO_MODE_OUTPUT);
+    LL_APB2_GRP1_EnableClock(LL_AHB1_GRP1_PERIPH_GPIOC);
+    LL_GPIO_SetPinMode(GPIOC, LL_GPIO_PIN_13, LL_GPIO_MODE_OUTPUT);
+    LL_GPIO_SetPinMode(GPIOC, LL_GPIO_PIN_14, LL_GPIO_MODE_OUTPUT);
 
     /* Enable CE for W25Q and set it to high lvl */
     LL_APB2_GRP1_EnableClock(LL_AHB1_GRP1_PERIPH_GPIOA);

@@ -8,8 +8,6 @@ void
 spi_config(spi_t* spi) {
     LL_SPI_InitTypeDef spi_init = {0};
 
-    LL_GPIO_InitTypeDef gpio_init = {0};
-
     /* Peripheral clock enable */
     if (spi->spi_base == SPI1) {
         LL_APB2_GRP1_EnableClock(LL_APB2_GRP1_PERIPH_SPI1);
@@ -18,24 +16,6 @@ spi_config(spi_t* spi) {
     } else {
         return;
     }
-
-    if (spi->mosi_port == GPIOA & spi->miso_port == GPIOA & spi->sck_port == GPIOA) {
-        LL_APB2_GRP1_EnableClock(LL_AHB1_GRP1_PERIPH_GPIOA);
-    } else if (spi->mosi_port == GPIOB) {
-        LL_APB2_GRP1_EnableClock(LL_AHB1_GRP1_PERIPH_GPIOB);
-    } else {
-        return;
-    }
-
-    gpio_init.Pin = spi->sck_pin | spi->mosi_pin;
-    gpio_init.Mode = LL_GPIO_MODE_ALTERNATE;
-    gpio_init.Speed = LL_GPIO_SPEED_FREQ_HIGH;
-    gpio_init.OutputType = LL_GPIO_OUTPUT_PUSHPULL;
-    LL_GPIO_Init(spi->mosi_port, &gpio_init);
-
-    gpio_init.Pin = spi->miso_pin;
-    gpio_init.Mode = LL_GPIO_MODE_INPUT;
-    LL_GPIO_Init(spi->miso_port, &gpio_init);
 
     spi_init.TransferDirection = LL_SPI_FULL_DUPLEX;
     spi_init.Mode = LL_SPI_MODE_MASTER;
