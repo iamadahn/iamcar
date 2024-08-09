@@ -1,5 +1,6 @@
 #include "bsp.h"
 #include "rcc.h"
+#include "stm32f411xe.h"
 #include "stm32f4xx_ll_bus.h"
 #include "stm32f4xx_ll_gpio.h"
 #include "stm32f4xx_ll_utils.h"
@@ -17,9 +18,10 @@ bsp_init(void) {
     NVIC_SetPriorityGrouping(3U);
     NVIC_SetPriority(SysTick_IRQn, NVIC_EncodePriority(NVIC_GetPriorityGrouping(), 15, 0));
 
+    /* GPIOA port clock enable */
+    LL_APB2_GRP1_EnableClock(LL_AHB1_GRP1_PERIPH_GPIOA);
+
     /* TIM2 pins initalisation */
-    LL_AHB1_GRP1_EnableClock(LL_AHB1_GRP1_PERIPH_GPIOA);
-    
     LL_GPIO_InitTypeDef tim2_pins = {
         .Pin = LL_GPIO_PIN_1 | LL_GPIO_PIN_2,
         .Mode = LL_GPIO_MODE_ALTERNATE,
@@ -29,6 +31,7 @@ bsp_init(void) {
     };
     LL_GPIO_Init(GPIOA, &tim2_pins);
 
+    /* TIM2 pwm mode initialisation */
     tim_pwm_t tim2_pwm = {
         .base = TIM2,
         .channels = LL_TIM_CHANNEL_CH2 | LL_TIM_CHANNEL_CH3,
@@ -38,8 +41,6 @@ bsp_init(void) {
     tim_pwm_init(&tim2_pwm);
 
     /* SPI1 pins initialisation */
-    LL_APB2_GRP1_EnableClock(LL_AHB1_GRP1_PERIPH_GPIOA);
-
     LL_GPIO_InitTypeDef spi1_pins = {
         .Pin = LL_GPIO_PIN_5 | LL_GPIO_PIN_7,
         .Mode = LL_GPIO_MODE_ALTERNATE,
@@ -53,13 +54,29 @@ bsp_init(void) {
     spi1_pins.Mode = LL_GPIO_MODE_INPUT;
     LL_GPIO_Init(GPIOA, &spi1_pins);
 
-    /* Create SPI struct and configure chosen SPI */
+    /* SPI1 initialisation */
     spi_t spi1 = {
         .spi_base = SPI1,
         .spi_irq = SPI1_IRQn,
     };
     spi_config(&spi1);
     
+    /* USB_OTG pins initialisation */
+    LL_GPIO_InitTypeDef usb_pins = {
+		.Pin = LL_GPIO_PIN_11 | LL_GPIO_PIN_12,
+		.Mode = LL_GPIO_MODE_ALTERNATE,
+		.Speed = LL_GPIO_SPEED_FREQ_VERY_HIGH,
+		.OutputType = LL_GPIO_OUTPUT_PUSHPULL,
+		.Pull = LL_GPIO_PULL_NO,
+		.Alternate = LL_GPIO_AF_10
+	};
+    LL_GPIO_Init(GPIOA, &usb_pins);
+	
+	NVIC_SetPriority(OTG_FS_IRQn, 5);
+	LL_AHB2_GRP1_EnableClock(LL_AHB2_GRP1_PERIPH_OTGFS);
+
+	/* Literally the most important line in configuring USB_OTG ever */
+	USB_OTG_FS->GCCFG |= USB_OTG_GCCFG_NOVBUSSENS;
 
     /* Enable LED on GPIOB pin 2 */
     LL_AHB1_GRP1_EnableClock(LL_AHB1_GRP1_PERIPH_GPIOC);
