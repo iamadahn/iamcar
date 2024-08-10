@@ -63,7 +63,7 @@ bsp_init(void) {
     
     /* USB_OTG pins initialisation */
     LL_GPIO_InitTypeDef usb_pins = {
-		.Pin = LL_GPIO_PIN_11 | LL_GPIO_PIN_12,
+		.Pin = LL_GPIO_PIN_8 | LL_GPIO_PIN_11 | LL_GPIO_PIN_12,
 		.Mode = LL_GPIO_MODE_ALTERNATE,
 		.Speed = LL_GPIO_SPEED_FREQ_VERY_HIGH,
 		.OutputType = LL_GPIO_OUTPUT_PUSHPULL,
@@ -72,11 +72,11 @@ bsp_init(void) {
 	};
     LL_GPIO_Init(GPIOA, &usb_pins);
 	
-	NVIC_SetPriority(OTG_FS_IRQn, 5);
-	LL_AHB2_GRP1_EnableClock(LL_AHB2_GRP1_PERIPH_OTGFS);
-
 	/* Literally the most important line in configuring USB_OTG ever */
 	USB_OTG_FS->GCCFG |= USB_OTG_GCCFG_NOVBUSSENS;
+
+	NVIC_SetPriority(OTG_FS_IRQn, 5);
+	LL_AHB2_GRP1_EnableClock(LL_AHB2_GRP1_PERIPH_OTGFS);
 
     /* Enable LED on GPIOB pin 2 */
     LL_AHB1_GRP1_EnableClock(LL_AHB1_GRP1_PERIPH_GPIOC);

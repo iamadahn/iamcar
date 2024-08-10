@@ -54,8 +54,6 @@ enum
 {
   ITF_NUM_CDC_0 = 0,
   ITF_NUM_CDC_0_DATA,
-  ITF_NUM_CDC_1,
-  ITF_NUM_CDC_1_DATA,
   ITF_NUM_TOTAL
 };
 
@@ -101,7 +99,7 @@ char const *string_desc_arr[] =
 {
   (const char[]) { 0x09, 0x04 }, // 0: is supported language is English (0x0409)
   "iamadahn",       // 1: Manufacturer
-  "f103_rc",        // 2: Product
+  "f411_car",        // 2: Product
   NULL,             // 3: Serials will use unique ID if possible
   "car cdc",        // 4: CDC Interface
 };

@@ -39,3 +39,7 @@ static void cdc_task(void) {
         }
     }
 }
+void
+OTG_FS_IRQHandler(void) {
+	tud_int_handler(0); // 0 means FS
+}
