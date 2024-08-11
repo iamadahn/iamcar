@@ -72,11 +72,13 @@ bsp_init(void) {
 	};
     LL_GPIO_Init(GPIOA, &usb_pins);
 	
-	/* Literally the most important line in configuring USB_OTG ever */
-	USB_OTG_FS->GCCFG |= USB_OTG_GCCFG_NOVBUSSENS;
-
 	NVIC_SetPriority(OTG_FS_IRQn, 5);
 	LL_AHB2_GRP1_EnableClock(LL_AHB2_GRP1_PERIPH_OTGFS);
+
+	/* Literally the most important line in configuring USB_OTG ever */
+    USB_OTG_FS->GCCFG |= USB_OTG_GCCFG_NOVBUSSENS;
+    USB_OTG_FS->GCCFG &= ~USB_OTG_GCCFG_VBUSBSEN;
+    USB_OTG_FS->GCCFG &= ~USB_OTG_GCCFG_VBUSASEN;
 
     /* Enable LED on GPIOB pin 2 */
     LL_AHB1_GRP1_EnableClock(LL_AHB1_GRP1_PERIPH_GPIOC);
