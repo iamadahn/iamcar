@@ -19,7 +19,7 @@ bsp_init(void) {
     NVIC_SetPriority(SysTick_IRQn, NVIC_EncodePriority(NVIC_GetPriorityGrouping(), 15, 0));
 
     /* GPIOA port clock enable */
-    LL_APB2_GRP1_EnableClock(LL_AHB1_GRP1_PERIPH_GPIOA);
+    LL_AHB1_GRP1_EnableClock(LL_AHB1_GRP1_PERIPH_GPIOA);
 
     /* TIM2 pins initalisation */
     LL_GPIO_InitTypeDef tim2_pins = {
