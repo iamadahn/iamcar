@@ -1,6 +1,7 @@
 #include "led_controller.h"
 #include "rtos.h"
 #include "drivers/led/led.h"
+#include "drivers/logger/logger.h"
 
 void
 led_controller_task(void* argument) {

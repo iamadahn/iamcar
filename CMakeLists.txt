@@ -43,6 +43,7 @@ set(DEFINES
     -DSTM32F411xE
     -DUSE_FULL_LL_DRIVER
     -DCFG_TUSB_MCU=OPT_MCU_STM32F4
+    -DLOGGER_BUF_SIZE=128
 )
 
 add_definitions(${DEFINES})
@@ -84,10 +85,12 @@ target_compile_definitions(root INTERFACE ${DEFINES})
 
 add_subdirectory(${CMAKE_SOURCE_DIR}/drivers/led)
 add_subdirectory(${CMAKE_SOURCE_DIR}/drivers/nrf24l01)
+add_subdirectory(${CMAKE_SOURCE_DIR}/drivers/logger)
 
 target_link_libraries(${PROJECT_NAME}.elf
     led_driver
     nrf24l01_driver
+    logger_driver
 )
 
 add_subdirectory(${CMAKE_SOURCE_DIR}/modules/led_controller)
