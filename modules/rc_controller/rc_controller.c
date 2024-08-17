@@ -6,10 +6,10 @@ void
 rc_controller_task(void* argument) {
     nrf24_t nrf24 = {
         .spi = SPI1,
-        .ce_port = GPIOC,
-        .ce_pin =  LL_GPIO_PIN_14,
-        .cs_port = GPIOC,
-        .cs_pin = LL_GPIO_PIN_13,
+        .ce_port = GPIOB,
+        .ce_pin =  LL_GPIO_PIN_0,
+        .cs_port = GPIOB,
+        .cs_pin = LL_GPIO_PIN_1,
     };
     uint8_t nrf24_connect_state = nrf24_is_connected(&nrf24);
     
