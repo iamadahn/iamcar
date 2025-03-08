@@ -97,7 +97,7 @@ async fn main(spawner: Spawner) -> ! {
 
     info!("Spawning tasks.");
     spawner.spawn(led_controller(led)).ok();
-    spawner.spawn(rc_controller(nrf_spi, nrf_ce, nrf_cns)).ok();
+    spawner.spawn(rc_controller(nrf_spi, nrf_ce, nrf_cns, input_pub)).ok();
     spawner.spawn(motor_controller(motor_ch2, motor_ch3, motor_lf, motor_lb, motor_rf, motor_rb, input_sub)).ok(); 
 
     loop {
