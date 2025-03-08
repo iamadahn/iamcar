@@ -18,7 +18,8 @@ use tasks::led::led_controller_task as led_controller;
 use tasks::rc::rc_controller_task as rc_controller;
 use tasks::motor::motor_controller_task as motor_controller;
 
-use tasks::rc::InputData;
+mod data_types;
+use data_types::InputData;
 
 static INPUT_CHANNEL: StaticCell<Channel<NoopRawMutex, InputData, 1>> = StaticCell::new();
 
