@@ -19,9 +19,11 @@ use tasks::rc::rc_controller_task as rc_controller;
 use tasks::motor::motor_controller_task as motor_controller;
 
 mod data_types;
-use data_types::InputData;
+use data_types::MotorInput;
+use data_types::ServoInput;
 
-static INPUT_CHANNEL: StaticCell<Channel<NoopRawMutex, InputData, 1>> = StaticCell::new();
+static MOTOR_INPUT_CHANNEL: StaticCell<Channel<NoopRawMutex, MotorInput, 1>> = StaticCell::new();
+static SERVO_INPUT_CHANNEL: StaticCell<Channel<NoopRawMutex, ServoInput, 1>> = StaticCell::new();
 
 #[embassy_executor::main]
 async fn main(spawner: Spawner) -> ! {
@@ -91,14 +93,18 @@ async fn main(spawner: Spawner) -> ! {
     let motor_rb = Output::new(peripherals.PA14, Level::Low, Speed::Low);
 
     info!("Initialising channels for tasks communication.");
-    let input_ch: &'static mut _ = INPUT_CHANNEL.init(Channel::new());
-    let input_pub = input_ch.sender();
-    let input_sub = input_ch.receiver();
+    let motor_input_ch: &'static mut _ = MOTOR_INPUT_CHANNEL.init(Channel::new());
+    let motor_input_pub = motor_input_ch.sender();
+    let motor_input_sub = motor_input_ch.receiver();
+
+    let servo_input_ch: &'static mut _ = SERVO_INPUT_CHANNEL.init(Channel::new());
+    let servo_input_pub = servo_input_ch.sender();
+    let servo_input_sub = servo_input_ch.receiver();
 
     info!("Spawning tasks.");
     spawner.spawn(led_controller(led)).ok();
-    spawner.spawn(rc_controller(nrf_spi, nrf_ce, nrf_cns, input_pub)).ok();
-    spawner.spawn(motor_controller(motor_l, motor_r, motor_lf, motor_lb, motor_rf, motor_rb, input_sub)).ok(); 
+    spawner.spawn(rc_controller(nrf_spi, nrf_ce, nrf_cns, motor_input_pub, servo_input_pub)).ok();
+    spawner.spawn(motor_controller(motor_l, motor_r, motor_lf, motor_lb, motor_rf, motor_rb, motor_input_sub)).ok(); 
 
     loop {
         /*

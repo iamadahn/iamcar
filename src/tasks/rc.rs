@@ -6,7 +6,7 @@ use embassy_time::Timer;
 use embassy_sync::blocking_mutex::raw::NoopRawMutex;
 use embassy_sync::channel::Sender;
 use embedded_nrf24l01::*;
-use crate::data_types::InputData;
+use crate::data_types::{InputData, MotorInput, ServoInput};
 
 const PAYLOAD_LENGTH: usize = 10;
 
@@ -15,7 +15,8 @@ pub async fn rc_controller_task(
     spi: Spi<'static, Blocking>,
     ce: Output<'static>,
     cns: Output<'static>,
-    input_pub: Sender<'static, NoopRawMutex, InputData, 1>) {
+    motor_input_pub: Sender<'static, NoopRawMutex, MotorInput, 1>,
+    servo_input_pub: Sender<'static, NoopRawMutex, ServoInput, 1>) {
     info!("Starting remote conroller task");
     let mut nrf = NRF24L01::new(ce, cns, spi).unwrap();
     nrf.set_frequency(8).unwrap();
@@ -45,7 +46,9 @@ pub async fn rc_controller_task(
             }
             info!("Rc controller: bytes {}", payload.as_ref());
             if let Some(input) = payload_get_input(payload.as_ref()) {
-                input_pub.send(input).await;
+                let (motor_input, servo_input) = input.parse_and_split();
+                motor_input_pub.send(motor_input).await;
+                servo_input_pub.send(servo_input).await;
             }
         }
         Timer::after_millis(100).await;
