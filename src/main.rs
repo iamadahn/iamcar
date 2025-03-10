@@ -82,8 +82,8 @@ async fn main(spawner: Spawner) -> ! {
         Default::default()
     );
     let motor_chs = motor_pwm.split();
-    let motor_ch2 = motor_chs.ch2;
-    let motor_ch3 = motor_chs.ch3;
+    let motor_l = motor_chs.ch2;
+    let motor_r = motor_chs.ch3;
 
     let motor_lf = Output::new(peripherals.PA11, Level::Low, Speed::Low);
     let motor_lb = Output::new(peripherals.PA12, Level::Low, Speed::Low);
@@ -98,7 +98,7 @@ async fn main(spawner: Spawner) -> ! {
     info!("Spawning tasks.");
     spawner.spawn(led_controller(led)).ok();
     spawner.spawn(rc_controller(nrf_spi, nrf_ce, nrf_cns, input_pub)).ok();
-    spawner.spawn(motor_controller(motor_ch2, motor_ch3, motor_lf, motor_lb, motor_rf, motor_rb, input_sub)).ok(); 
+    spawner.spawn(motor_controller(motor_l, motor_r, motor_lf, motor_lb, motor_rf, motor_rb, input_sub)).ok(); 
 
     loop {
         /*

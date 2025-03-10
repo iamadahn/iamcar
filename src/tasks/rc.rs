@@ -8,6 +8,8 @@ use embassy_sync::channel::Sender;
 use embedded_nrf24l01::*;
 use crate::data_types::InputData;
 
+const PAYLOAD_LENGTH: usize = 10;
+
 #[embassy_executor::task]
 pub async fn rc_controller_task(
     spi: Spi<'static, Blocking>,
@@ -29,15 +31,54 @@ pub async fn rc_controller_task(
     nrf.flush_tx().unwrap();
 
     let mut nrf = nrf.rx().unwrap();
-    let mut bytes: &[u8];
 
     loop {
         if nrf.can_read().unwrap().is_some() {
             let payload = nrf.read().unwrap();
-            bytes = payload.as_ref();
-            info!("Rc controller: bytes {}", bytes);
+            if payload.len() != PAYLOAD_LENGTH {
+                continue;
+            }
+            if !checksum_valid(payload.as_ref())
+            {
+                info!("Invalid checksum.");
+                continue;
+            }
+            info!("Rc controller: bytes {}", payload.as_ref());
+            if let Some(input) = payload_get_input(payload.as_ref()) {
+                input_pub.send(input).await;
+            }
         }
-        Timer::after_millis(500).await;
+        Timer::after_millis(100).await;
     }
+}
+
+fn checksum_valid(payload: &[u8]) -> bool {
+    let mut ck_a: u8 = 0;
+    let mut ck_b: u8 = 0;
+    for byte in 0..payload.len() - 2 {
+        ck_a = ck_a.wrapping_add(payload[byte]);
+        ck_b = ck_b.wrapping_add(ck_a);
+    }
+
+    if (payload[PAYLOAD_LENGTH - 2], payload[PAYLOAD_LENGTH - 1]) != (ck_a, ck_b) {
+        return false;
+    }
+
+    true
+}
+
+fn payload_get_input(payload: &[u8]) -> Option<InputData> {
+    if (payload[0], payload[1], payload[2], payload[3]) != (0xDE, 0xAD, 0xBA, 0xBE) {
+        return None;
+    }
+
+    let input = InputData {
+        x1: payload[4],
+        y1: payload[5],
+        x2: payload[6],
+        y2: payload[7],
+    };
+
+    Some(input)
 }
 
