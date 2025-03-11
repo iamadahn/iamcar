@@ -17,6 +17,7 @@ mod tasks;
 use tasks::led::led_controller_task as led_controller;
 use tasks::rc::rc_controller_task as rc_controller;
 use tasks::motor::motor_controller_task as motor_controller;
+use tasks::servo::servo_controller_task as servo_controller;
 
 mod data_types;
 use data_types::MotorInput;
@@ -92,6 +93,19 @@ async fn main(spawner: Spawner) -> ! {
     let motor_rf = Output::new(peripherals.PA13, Level::Low, Speed::Low);
     let motor_rb = Output::new(peripherals.PA14, Level::Low, Speed::Low);
 
+    info!("Initialising servo pwm channel.");
+    let tim2_ch2_pin = PwmPin::new_ch2(peripherals.PA1, OutputType::PushPull);
+    let servo_pwm = SimplePwm::new(
+        peripherals.TIM2,
+        None,
+        Some(tim2_ch2_pin),
+        None,
+        None,
+        Hertz(50),
+        Default::default()
+    );
+    let servo_pwm_ch = servo_pwm.split().ch2;
+
     info!("Initialising channels for tasks communication.");
     let motor_input_ch: &'static mut _ = MOTOR_INPUT_CHANNEL.init(Channel::new());
     let motor_input_pub = motor_input_ch.sender();
@@ -105,6 +119,7 @@ async fn main(spawner: Spawner) -> ! {
     spawner.spawn(led_controller(led)).ok();
     spawner.spawn(rc_controller(nrf_spi, nrf_ce, nrf_cns, motor_input_pub, servo_input_pub)).ok();
     spawner.spawn(motor_controller(motor_l, motor_r, motor_lf, motor_lb, motor_rf, motor_rb, motor_input_sub)).ok(); 
+    spawner.spawn(servo_controller(servo_pwm_ch, servo_input_sub)).ok();
 
     loop {
         /*
